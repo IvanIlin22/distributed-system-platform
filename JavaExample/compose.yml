@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  service-a:
+    build:
+      context: ./Spring-A
+      dockerfile: Dockerfile
+    container_name: service-a
+    environment:
+      - SERVICE_B_URL=http://service-b
+      - SERVER_PORT=80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - SERVICE_A=service-a
+    ports:
+      - "10001:80"
+    labels:
+      - "platform=distributed-system-platform"
+    networks:
+      - platform-network
+    depends_on:
+      - service-b
+
+  service-b:
+    build:
+      context: ./Spring-B
+      dockerfile: Dockerfile
+    container_name: service-b
+    environment:
+      - SERVER_PORT=80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - SERVICE_B=service-b
+    ports:
+      - "10002:80"
+    labels:
+      - "platform=distributed-system-platform"
+    networks:
+      - platform-network
+     
+networks:
+  platform-network:
+    external: true
+    name: platform-net

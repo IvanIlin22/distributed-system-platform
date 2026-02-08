@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: ${SERVICE_A:service-a}
+
+otel:
+  traces:
+    exporter: otlp
+    sampler: parentbased_traceidratio
+    sampler.arg: 1.0
+  metrics:
+    exporter: otlp
+  logs:
+    exporter: none
+
+  metric:
+    export:
+      interval: 5s
+
+  exporter:
+    otlp:
+      protocol: grpc
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+      compression: gzip
+      timeout: 5s
+
+  resource:
+    attributes:
+      service.version: 1.0.0
+      deployment.environment: production
+
+  instrumentation:
+    spring-webmvc:
+      enabled: true
+    jdbc:
+      enabled: true
+    kafka:
+      enabled: true
+    annotations:
+      enabled: true
+
+service-b:
+  url: ${SERVICE_B_URL:http://localhost:10002}
+
+server:
+  port: ${SERVER_PORT:80}
+
+logging:
+  level:
+    io.opentelemetry.exporter.otlp.metrics: DEBUG
+    io.opentelemetry.sdk.metrics.export: DEBUG
+    io.opentelemetry.sdk.metrics.internal.export: DEBUG
+    io.opentelemetry.exporter.internal.grpc: DEBUG
+    io.opentelemetry: INFO
+    org.springframework.boot.actuator: INFO
