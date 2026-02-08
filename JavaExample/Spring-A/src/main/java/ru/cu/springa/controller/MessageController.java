@@ -33,7 +33,7 @@ public class MessageController {
     LOGGER.info("Message A: {}", messageId);
 
     String url = serviceBUrl + "/api/message-b";
-    restTemplate.postForEntity(url, null, Void.class);
+    restTemplate.postForEntity(url, messageId, Void.class);
 
     return ResponseEntity.ok("Message sent with ID: " + messageId);
   }
