@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cu.springb.service.DeliveryReceiver;
+import ru.cu.springb.service.MessageProcessService;
 
 @RestController
 @RequestMapping("/api")
@@ -25,6 +26,12 @@ public class MessageController {
   @PostMapping("/message-b")
   public ResponseEntity<String> messageB(@RequestBody String messageId) {
     LOGGER.info("Message from A: {}", messageId);
+
+    if (MessageProcessService.processMessage(messageId) != null) {
+      LOGGER.info("Message from A already process: {}", messageId);
+
+      return ResponseEntity.ok("Message sent with ID: " + messageId);
+    }
 
     deliveryReceiver.incrementDeliveryMessageSent(messageId);
 
